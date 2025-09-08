@@ -1,18 +1,20 @@
 {
-  "name": "@itangbao-auth/react",
+  "name": "itangbao-auth-react",
   "version": "0.1.0",
   "description": "React components for AuthHub authentication",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@itangbao-auth/sdk": "workspace:*",
-    "@itangbao-auth/types": "workspace:*"
+    "itangbao-auth-sdk": "workspace:*",
+    "itangbao-auth-types": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

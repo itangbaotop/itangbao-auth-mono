@@ -2,8 +2,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthHubClient } from '@itangbao-auth/sdk';
-import type { User } from '@itangbao-auth/types';
+import { AuthHubClient } from 'itangbao-auth-sdk';
+import type { User } from 'itangbao-auth-types';
 
 interface AuthContextType {
   user: User | null;

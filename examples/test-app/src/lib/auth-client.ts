@@ -1,5 +1,5 @@
 // lib/auth-client.ts
-import { AuthHubClient } from '@itangbao-auth/sdk';
+import { AuthHubClient } from 'itangbao-auth-sdk';
 
 export const authClient = new AuthHubClient({
   authUrl: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL!,

@@ -1,7 +1,7 @@
 // app/page.tsx
 'use client';
 
-import { useAuth, ProtectedRoute, LogoutButton, UserInfo } from '@itangbao-auth/react';
+import { useAuth, ProtectedRoute, LogoutButton, UserInfo } from 'itangbao-auth-react';
 
 export default function HomePage() {
   const { isLoading } = useAuth();

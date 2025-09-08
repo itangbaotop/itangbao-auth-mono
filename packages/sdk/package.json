@@ -1,10 +1,12 @@
 {
-  "name": "@itangbao-auth/sdk",
+  "name": "itangbao-auth-sdk",
   "version": "0.1.0",
   "description": "JavaScript SDK for AuthHub authentication service",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -12,7 +14,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@itangbao-auth/types": "workspace:*"
+    "itangbao-auth-types": "workspace:*"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -22,7 +24,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": ["auth", "authentication", "oauth", "sdk"],
+  "keywords": [
+    "auth",
+    "authentication",
+    "oauth",
+    "sdk"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/itangbaotop/itangbao-auth-mono.git",

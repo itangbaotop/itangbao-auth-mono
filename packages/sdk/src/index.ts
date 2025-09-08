@@ -1,12 +1,12 @@
 // packages/sdk/src/index.ts
-import type { 
-  ItangbaoAuthConfig, 
+import {
+  ItangbaoAuthConfig,
   User, 
   AuthResult, 
   TokenResponse, 
-} from '@itangbao-auth/types';
+} from 'itangbao-auth-types';
 
-export * from '@itangbao-auth/types';
+export * from 'itangbao-auth-types';
 
 export interface AuthHubClientConfig extends ItangbaoAuthConfig {
   apiBaseUrl?: string; // 添加后端API基础URL配置

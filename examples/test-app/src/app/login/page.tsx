@@ -1,7 +1,7 @@
 // app/login/page.tsx
 'use client';
 
-import { useAuth, LoginButton } from '@itangbao-auth/react';
+import { useAuth, LoginButton } from 'itangbao-auth-react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 

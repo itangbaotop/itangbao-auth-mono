@@ -123,10 +123,10 @@ importers:
 
   examples/test-app:
     dependencies:
-      '@itangbao-auth/react':
+      itangbao-auth-react:
         specifier: workspace:*
         version: link:../../packages/react
-      '@itangbao-auth/sdk':
+      itangbao-auth-sdk:
         specifier: workspace:*
         version: link:../../packages/sdk
       next:
@@ -190,10 +190,10 @@ importers:
 
   packages/react:
     dependencies:
-      '@itangbao-auth/sdk':
+      itangbao-auth-sdk:
         specifier: workspace:*
         version: link:../sdk
-      '@itangbao-auth/types':
+      itangbao-auth-types:
         specifier: workspace:*
         version: link:../types
       react-dom:
@@ -212,7 +212,7 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@itangbao-auth/types':
+      itangbao-auth-types:
         specifier: workspace:*
         version: link:../types
     devDependencies:
