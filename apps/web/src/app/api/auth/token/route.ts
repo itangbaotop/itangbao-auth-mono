@@ -72,7 +72,7 @@ async function handleAuthorizationCode(params: any, db: any) {
     .where(eq(applications.clientId, client_id))
     .limit(1);
 
-  if (!application[0] || application[0].clientSecret !== client_secret) {
+  if (!application[0] || (client_secret && application[0].clientSecret !== client_secret)) {
     return NextResponse.json({ error: 'invalid_client' }, { status: 401 });
   }
   console.log('application[0]', application[0])
@@ -81,6 +81,8 @@ async function handleAuthorizationCode(params: any, db: any) {
   if (authCodeRecord[0].codeChallenge && code_verifier) {
     if (authCodeRecord[0].codeChallengeMethod === 'S256') {
       const hashedCodeVerifier = await sha256(code_verifier);
+      console.log('hashedCodeVerifier', hashedCodeVerifier)
+      console.log('authCodeRecord[0].codeChallenge', authCodeRecord[0].codeChallenge)
       if (hashedCodeVerifier !== authCodeRecord[0].codeChallenge) {
         return NextResponse.json({ error: 'invalid_grant' }, { status: 400 });
       }
@@ -153,7 +155,7 @@ async function handleRefreshToken(params: any, db: any) {
     .where(eq(applications.clientId, client_id))
     .limit(1);
 
-  if (!application[0] || application[0].clientSecret !== client_secret) {
+  if (!application[0] || (client_secret && application[0].clientSecret !== client_secret)) {
     return NextResponse.json({ error: 'invalid_client' }, { status: 401 });
   }
 

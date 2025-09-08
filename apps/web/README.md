@@ -66,4 +66,7 @@ GitHub Discussions: https://github.com/your-username/authhub/discussions
 todo
 - [ ] 增加google一键登录
 - [ ] 增加深色模式
+- [ ] 增加用户管理（来源）
+- [ ] 分离admin后台和web功能
+- [ ] 迁移缓存到kv
 

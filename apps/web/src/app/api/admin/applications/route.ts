@@ -6,6 +6,7 @@ import { applications } from "@/lib/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { clearApplicationDomainsCache } from "@/lib/cors/application-cors";
 
 export const runtime = "edge";
 
@@ -59,6 +60,8 @@ export async function POST(request: NextRequest) {
       clientSecret,
       createdBy: admin.id,
     }).returning();
+
+     clearApplicationDomainsCache();
     
     return NextResponse.json(newApp[0]);
   } catch (error) {

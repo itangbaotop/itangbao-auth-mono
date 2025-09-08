@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { applications } from "@/lib/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq } from "drizzle-orm";
+import { clearApplicationDomainsCache } from "@/lib/cors/application-cors";
 
 export const runtime = "edge";
 
@@ -41,6 +42,7 @@ export async function PUT(
       );
     }
     
+     clearApplicationDomainsCache();
     return NextResponse.json(updatedApp[0]);
   } catch (error) {
     return NextResponse.json(

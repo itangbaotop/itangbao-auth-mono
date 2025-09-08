@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { I18nProvider } from "@/contexts/I18nProvider";
+import { useClientInfo } from "@/hooks/useClientInfo";
 
 function SignInPageContent() {
   const { t } = useTranslation(['auth', 'common']);
@@ -24,6 +25,8 @@ function SignInPageContent() {
   const router = useRouter();
   const { toasts, toast, removeToast } = useToast();
 
+  
+
   const oneTapInitialized = useRef(false);
 
   // OAuth 参数获取
@@ -35,6 +38,8 @@ function SignInPageContent() {
   const originalCodeChallengeMethod = searchParams.get('code_challenge_method');
 
   const [authorizeRedirectUrl, setAuthorizeRedirectUrl] = useState<URL | null>(null);
+
+  const { clientInfo, isLoading: clientLoading, error: clientError } = useClientInfo(originalClientId);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !authorizeRedirectUrl) {
@@ -261,17 +266,51 @@ function SignInPageContent() {
         <div className="max-w-md w-full space-y-8">
           {/* Logo和标题 */}
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-6">
-              <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
+            {/* 显示客户端Logo（如果有） */}
+            {clientInfo?.logo ? (
+              <div className="mx-auto h-16 w-16 mb-6">
+                <img 
+                  src={clientInfo.logo} 
+                  alt={clientInfo.name}
+                  className="h-16 w-16 rounded-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-6">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            )}
+            
+            {/* 显示客户端名称 */}
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {t('auth:title')}
+              {clientLoading ? (
+                <div className="animate-pulse bg-gray-200 h-8 w-48 mx-auto rounded"></div>
+              ) : clientInfo ? (
+                <>登录到 {clientInfo.name}</>
+              ) : (
+                t('auth:title')
+              )}
             </h2>
+            
+            {/* 显示客户端描述 */}
             <p className="text-gray-600">
-              {t('auth:subtitle')}
+              {clientLoading ? (
+                <div className="animate-pulse bg-gray-200 h-4 w-64 mx-auto rounded mt-2"></div>
+              ) : clientInfo ? (
+                clientInfo.description || t('auth:subtitle')
+              ) : (
+                t('auth:subtitle')
+              )}
             </p>
+            
+            {/* 显示客户端错误信息 */}
+            {clientError && (
+              <p className="text-red-500 text-sm mt-2">
+                {clientError}
+              </p>
+            )}
           </div>
 
           <div className="bg-white py-8 px-6 shadow-xl rounded-2xl">
