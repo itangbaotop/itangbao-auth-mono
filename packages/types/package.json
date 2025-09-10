@@ -1,7 +1,7 @@
 {
   "name": "itangbao-auth-types",
   "version": "0.1.0",
-  "description": "TypeScript types for AuthHub",
+  "description": "TypeScript types for itangbao-auth",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

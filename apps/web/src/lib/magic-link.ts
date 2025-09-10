@@ -22,9 +22,13 @@ export async function sendMagicLinkEmail(email: string, token: string, baseUrl: 
 
   try {
     const { env } = await getCloudflareContext();
-    const RESEND_API_KEY = env.RESEND_API_KEY as string | undefined;
-    const SENDGRID_API_KEY = env.SENDGRID_API_KEY as string | undefined;
-    const EMAIL_FROM = env.EMAIL_FROM as string | undefined;
+    // const RESEND_API_KEY = env.RESEND_API_KEY as string | undefined;
+    // const SENDGRID_API_KEY = env.SENDGRID_API_KEY as string | undefined;
+    // const EMAIL_FROM = env.EMAIL_FROM as string | undefined;
+    const RESEND_API_KEY =  undefined;
+    const SENDGRID_API_KEY = undefined;
+    const EMAIL_FROM = undefined;
+
 
     // 使用 Resend 发送邮件
     if (RESEND_API_KEY) {

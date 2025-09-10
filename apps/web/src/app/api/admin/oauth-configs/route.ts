@@ -44,10 +44,16 @@ export async function POST(request: NextRequest) {
     const { env } = await getCloudflareContext();
     const db = getDb(env.DB);
     
-    const body = await request.json();
-    const { provider, clientId, clientSecret, isEnabled = true } = body;
+    const body = await request.json() as {
+      appId: string;
+      provider: string;
+      clientId: string;
+      clientSecret: string;
+      isEnabled?: boolean;
+    };
+    const { appId, provider, clientId, clientSecret, isEnabled = true } = body;
     
-    if (!provider || !clientId || !clientSecret) {
+    if (!appId || !provider || !clientId || !clientSecret) {
       return NextResponse.json(
         { error: "缺少必要字段" },
         { status: 400 }
@@ -84,6 +90,7 @@ export async function POST(request: NextRequest) {
       // 创建新配置
       const newConfig = await db.insert(appOAuthConfigs).values({
         id: nanoid(),
+        appId,
         provider,
         clientId,
         clientSecret,

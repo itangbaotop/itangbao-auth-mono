@@ -68,8 +68,7 @@ export async function PUT(request: NextRequest) {
     const { env } = await getCloudflareContext();
     const db = getDb(env.DB);
     
-    const body = await request.json();
-    const { name, currentPassword, newPassword } = body;
+    const { name, currentPassword, newPassword } = await request.json() as { name?: string; currentPassword?: string; newPassword?: string };
     
     // 如果要修改密码，需要验证当前密码
     if (newPassword) {

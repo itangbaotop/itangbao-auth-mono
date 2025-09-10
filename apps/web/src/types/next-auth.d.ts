@@ -19,3 +19,41 @@ declare module "next-auth/jwt" {
     role: string
   }
 }
+
+interface handleTokenParams {
+  grant_type: string
+  code?: string
+  redirect_uri?: string
+  client_id?: string
+  client_secret?: string
+  code_verifier?: string
+  refresh_token?: string
+  scope?: string
+}
+
+interface ProfileContentProps {
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    emailVerified?: Date | null;
+  };
+  userAccounts: Array<{
+    provider: string;
+    type: string;
+    providerAccountId: string | null;
+  }>;
+}
+
+
+interface SignOutMessage {
+  token?: {
+    sub?: string;
+  };
+  session?: {
+    user?: {
+      id?: string;
+    };
+  };
+}

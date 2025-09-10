@@ -10,7 +10,7 @@ export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   try {
-    const { token, email } = await request.json();
+    const { token, email } = await request.json() as { token: string; email: string };
 
     if (!token || !email) {
       return NextResponse.json(

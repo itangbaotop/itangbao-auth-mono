@@ -10,23 +10,12 @@ import { Mail, User, LogOut, Settings, Shield, Github, Chrome, Key } from "lucid
 import { signOut } from "next-auth/react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { I18nProvider } from "@/contexts/I18nProvider";
-
-interface ProfileContentProps {
-  user: {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-    emailVerified?: Date | null;
-  };
-  userAccounts: Array<{
-    provider: string;
-    type: string;
-    providerAccountId: string | null;
-  }>;
-}
+import { useClientContext } from '@/hooks/useClientContext';
+import { ProfileContentProps } from '@/types/next-auth';
 
 function ProfileContentInner({ user, userAccounts }: ProfileContentProps) {
+  const { getClientHomeUrl, clearClientContext } = useClientContext();
+
   const { t } = useTranslation(['profile', 'common']);
 
   // 获取 provider 的显示信息
@@ -85,6 +74,35 @@ function ProfileContentInner({ user, userAccounts }: ProfileContentProps) {
       day: "numeric",
     });
   };
+
+  const handleSignOut = async () => {
+    const clientHomeUrl = getClientHomeUrl();
+  
+    console.log('clientHomeUrl:', clientHomeUrl);
+    
+    if (clientHomeUrl && clientHomeUrl !== '/') {
+      // 有客户端上下文：先退出但不重定向，然后手动跳转
+      clearClientContext();
+      
+      try {
+        // 调用 signOut 但不自动重定向
+        const logoutUrl = new URL(clientHomeUrl);
+        logoutUrl.searchParams.set('logout', 'true');
+        logoutUrl.searchParams.set('from', 'auth-service');
+        
+        console.log('跳转到客户端退出URL:', logoutUrl.toString());
+        window.location.href = logoutUrl.toString();
+      } catch (error) {
+        console.error('SignOut 失败:', error);
+        // 即使失败也要跳转
+        window.location.href = clientHomeUrl;
+      }
+    } else {
+      // 没有客户端上下文：使用标准退出流程
+      clearClientContext();
+      signOut({ callbackUrl: "/" });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -246,7 +264,7 @@ function ProfileContentInner({ user, userAccounts }: ProfileContentProps) {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button 
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={ handleSignOut }
                   variant="destructive" 
                   className="w-full justify-start"
                 >

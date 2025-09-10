@@ -4,8 +4,10 @@ import { getDb } from "@/lib/db";
 import { applications, authorizationCodes, users, refreshTokens } from "@/lib/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq, and, gt } from "drizzle-orm";
-import { signJwt, verifyJwt } from "@/lib/utils/jwt";
+import { signJwt, UserJwtPayload, verifyJwt } from "@/lib/utils/jwt";
 import { nanoid } from "nanoid";
+import { DrizzleD1Database } from "drizzle-orm/d1";
+import { handleTokenParams } from "@/types/next-auth";
 
 export const runtime = "edge";
 
@@ -19,7 +21,7 @@ async function sha256(plain: string): Promise<string> {
 }
 
 // 生成 refresh token
-async function generateRefreshToken(userId: string, clientId: string, scope: string, db: any) {
+async function generateRefreshToken(userId: string, clientId: string, scope: string, db: DrizzleD1Database) {
   const refreshToken = nanoid(64); // 生成随机字符串
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30); // 30天过期
@@ -38,7 +40,7 @@ async function generateRefreshToken(userId: string, clientId: string, scope: str
 }
 
 // 处理 authorization_code grant
-async function handleAuthorizationCode(params: any, db: any) {
+async function handleAuthorizationCode(params: handleTokenParams, db: DrizzleD1Database) {
   const { code, redirect_uri, client_id, client_secret, code_verifier } = params;
 
   console.log('params', params)
@@ -91,7 +93,7 @@ async function handleAuthorizationCode(params: any, db: any) {
 
   // 标记授权码为已使用
   await db.update(authorizationCodes)
-    .set({ isUsed: true, updatedAt: new Date() })
+    .set({ isUsed: true })
     .where(eq(authorizationCodes.id, authCodeRecord[0].id));
 
   console.log('authCodeRecord[0].scope', authCodeRecord[0].scope)
@@ -106,11 +108,14 @@ async function handleAuthorizationCode(params: any, db: any) {
   }
 
   // 生成 access token
-  const jwtPayload = {
+  const jwtPayload: UserJwtPayload = {
+    sub: user[0].id,
+    aud: client_id,
+    scope: authCodeRecord[0].scope || '',
     id: user[0].id,
     name: user[0].name,
     email: user[0].email,
-    role: user[0].role,
+    role: user[0].role || '',
     image: user[0].image,
     appId: client_id,
   };
@@ -121,7 +126,7 @@ async function handleAuthorizationCode(params: any, db: any) {
   const refresh_token = await generateRefreshToken(
     user[0].id, 
     client_id, 
-    authCodeRecord[0].scope, 
+    authCodeRecord[0].scope || '', 
     db
   );
 
@@ -142,7 +147,7 @@ async function handleAuthorizationCode(params: any, db: any) {
 }
 
 // 处理 refresh_token grant
-async function handleRefreshToken(params: any, db: any) {
+async function handleRefreshToken(params: handleTokenParams, db: DrizzleD1Database) {
   const { refresh_token, client_id, client_secret, scope } = params;
 
   if (!refresh_token || !client_id) {
@@ -185,11 +190,14 @@ async function handleRefreshToken(params: any, db: any) {
   }
 
   // 生成新的 access token
-  const jwtPayload = {
+  const jwtPayload: UserJwtPayload = {
+    sub: user[0].id,
+    aud: client_id,
+    scope: refreshTokenRecord[0].scope || '',
     id: user[0].id,
     name: user[0].name,
     email: user[0].email,
-    role: user[0].role,
+    role: user[0].role || '',
     image: user[0].image,
     appId: client_id,
   };
@@ -200,13 +208,13 @@ async function handleRefreshToken(params: any, db: any) {
   const new_refresh_token = await generateRefreshToken(
     user[0].id,
     client_id,
-    refreshTokenRecord[0].scope,
+    refreshTokenRecord[0].scope || '',
     db
   );
 
   // 撤销旧的 refresh token
   await db.update(refreshTokens)
-    .set({ isRevoked: true, updatedAt: new Date() })
+    .set({ isRevoked: true })
     .where(eq(refreshTokens.id, refreshTokenRecord[0].id));
 
   return NextResponse.json({
@@ -215,16 +223,23 @@ async function handleRefreshToken(params: any, db: any) {
     expires_in: 900,
     refresh_token: new_refresh_token,
     scope: refreshTokenRecord[0].scope,
+    userinfo: {
+      id: user[0].id,
+      name: user[0].name,
+      email: user[0].email,
+      image: user[0].image,
+      // 其他需要的用户信息
+    }
   });
 }
 
 export async function POST(request: NextRequest) {
   console.log("--- /api/auth/token called ---");
-  const params = await request.json();
+  const params = await request.json() as handleTokenParams;
   const grant_type = params.grant_type;
 
   const { env } = await getCloudflareContext();
-  const db = getDb(env.DB);
+  const db = getDb(env.DB) as unknown as DrizzleD1Database;
 
   console.log("Token: Received params:", params);
 

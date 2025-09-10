@@ -52,7 +52,7 @@ export default function AdminPage() {
     try {
       const response = await fetch("/api/admin/applications");
       if (response.ok) {
-        const apps = await response.json();
+        const apps = await response.json() as Application[];
         setApplications(apps);
         
         // 计算统计数据
@@ -63,8 +63,8 @@ export default function AdminPage() {
           todayLogins: 0,
         });
       } else {
-        const error = await response.json();
-        toast.error("获取应用列表失败", error.error);
+        const error = await response.json() as { error?: string };
+        toast.error("获取应用列表失败", error.error || "未知错误");
       }
     } catch (error) {
       console.error("获取应用列表失败:", error);
@@ -94,8 +94,8 @@ export default function AdminPage() {
         fetchApplications();
         toast.success("应用创建成功", `应用 "${data.name}" 已成功创建`);
       } else {
-        const error = await response.json();
-        toast.error("创建应用失败", error.error);
+        const error = await response.json() as { error?: string };
+        toast.error("创建应用失败", error.error || "未知错误");
       }
     } catch (error) {
       console.error("创建应用失败:", error);
@@ -126,8 +126,8 @@ export default function AdminPage() {
         fetchApplications();
         toast.success("应用更新成功", `应用 "${data.name}" 已成功更新`);
       } else {
-        const error = await response.json();
-        toast.error("更新应用失败", error.error);
+        const error = await response.json() as { error?: string };
+        toast.error("更新应用失败", error.error || "未知错误");
       }
     } catch (error) {
       console.error("更新应用失败:", error);
@@ -148,8 +148,8 @@ export default function AdminPage() {
         fetchApplications();
         toast.success("应用删除成功", `应用 "${name}" 已成功删除`);
       } else {
-        const error = await response.json();
-        toast.error("删除应用失败", error.error);
+        const error = await response.json() as { error?: string };
+        toast.error("删除应用失败", error.error || "未知错误");
       }
     } catch (error) {
       console.error("删除应用失败:", error);

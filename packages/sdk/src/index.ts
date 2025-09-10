@@ -49,6 +49,13 @@ export class AuthHubClient {
   }
 
   /**
+   * 获得用户资料连接
+   */
+  async getUserProfileUrl(): Promise<string> {
+    return `${this.config.authUrl}/profile`;
+  }
+
+  /**
    * 获取当前用户信息（从后端API获取）
    */
   async getCurrentUser(): Promise<User | null> {

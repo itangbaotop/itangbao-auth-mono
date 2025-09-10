@@ -37,7 +37,12 @@ export async function POST(request: NextRequest) {
     const { env } = await getCloudflareContext();
     const db = getDb(env.DB);
     
-    const body = await request.json();
+    const body = await request.json() as {
+      name: string;
+      description?: string;
+      domain: string;
+      redirectUris: string[];
+    };
     const { name, description, domain, redirectUris } = body;
     
     if (!name || !domain || !redirectUris) {

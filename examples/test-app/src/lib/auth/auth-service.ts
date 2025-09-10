@@ -81,16 +81,14 @@ export class AuthService {
     }
   }
 
-  async logout(accessToken: string, refreshToken?: string): Promise<void> {
+  async logout(accessToken: string, refreshToken?: string, userId?: string): Promise<void> {
     try {
       await fetch(`${this.baseUrl}/api/auth/logout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_token: accessToken,
-          refresh_token: refreshToken,
+          user_id: this.clientId,
           client_id: this.clientId,
-          client_secret: this.clientSecret,
         }),
       });
     } catch (error) {

@@ -1,6 +1,6 @@
 // app/layout.tsx
 import { AuthWrapper } from '../components/AuthWrapper';
-// import './globals.css';
+import './globals.css';
 
 export default function RootLayout({
   children,

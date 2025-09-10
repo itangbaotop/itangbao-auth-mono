@@ -128,7 +128,7 @@ function HomePageContent({ session }: HomePageProps) {
                 <Lock className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-bold text-gray-900">
-                {t('home:brand', { defaultValue: 'AuthHub' })}
+                {t('home:brand', { defaultValue: 'itangbao-auth' })}
               </span>
               <Badge variant="secondary" className="ml-2">
                 {t('home:opensource', { defaultValue: '开源' })}
@@ -452,7 +452,7 @@ function HomePageContent({ session }: HomePageProps) {
                   <Lock className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold">
-                  {t('home:brand', { defaultValue: 'AuthHub' })}
+                  {t('home:brand', { defaultValue: 'itangbao-auth' })}
                 </span>
                 <Badge variant="secondary" className="bg-gray-700 text-gray-300">
                   {t('home:opensource', { defaultValue: '开源' })}
@@ -552,7 +552,7 @@ function HomePageContent({ session }: HomePageProps) {
           {/* 版权信息 */}
           {/* <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 AuthHub. {t('home:footer.license', { defaultValue: 'MIT 许可证开源项目。' })}
+              © 2024 itangbao-auth. {t('home:footer.license', { defaultValue: 'MIT 许可证开源项目。' })}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a 

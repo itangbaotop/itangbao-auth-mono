@@ -8,7 +8,11 @@ import { eq, and } from "drizzle-orm";
 export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
-  const params = await request.json();
+  const params = await request.json() as {
+    token: string;
+    client_id: string;
+    client_secret: string;
+  };
   const { token, client_id, client_secret } = params;
 
   if (!token || !client_id) {

@@ -18,15 +18,17 @@ const JWT_ALG = 'HS256'; // 对称加密算法，例如 HMAC SHA256
 
 // JWT 载荷的类型定义
 // 包含了用户和应用相关的信息
-export interface UserJwtPayload {
+export type UserJwtPayload = jose.JWTPayload & {
+  sub: string;
+  aud: string;
+  scope: string;
   id: string;
+  appId?: string;
   name?: string | null;
   email: string;
   role: string;
   image?: string | null;
-  appId?: string; // 标识是哪个应用发起的请求，通常用于 JWT 的 Audience (aud) 字段
-  // 可以在这里添加其他你希望包含在 JWT 中的用户属性
-}
+};
 
 /**
  * 创建并签名一个 JWT (Access Token)。

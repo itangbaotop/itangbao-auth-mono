@@ -1,7 +1,7 @@
 {
   "name": "itangbao-auth-react",
-  "version": "0.1.0",
-  "description": "React components for AuthHub authentication",
+  "version": "0.2.0",
+  "description": "React components for itangbao-auth authentication",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

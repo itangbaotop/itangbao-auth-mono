@@ -1,7 +1,7 @@
 // app/api/auth/token/access/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { AuthService } from '../../../../../lib/auth-service';
-import { CookieManager } from '../../../../../lib/cookie-manager';
+import { AuthService } from '@/lib/auth/auth-service';
+import { CookieManager } from '@/lib/auth/cookie-manager';
 
 const authService = new AuthService();
 

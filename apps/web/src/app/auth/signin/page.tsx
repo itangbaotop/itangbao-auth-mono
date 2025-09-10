@@ -2,7 +2,7 @@
 "use client";
 
 import { getSession, signIn } from "next-auth/react";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
 import { ToastContainer } from "@/components/ToastContainer";
@@ -13,6 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { I18nProvider } from "@/contexts/I18nProvider";
 import { useClientInfo } from "@/hooks/useClientInfo";
+import Link from "next/link";
+import { User } from "next-auth";
 
 function SignInPageContent() {
   const { t } = useTranslation(['auth', 'common']);
@@ -24,6 +26,7 @@ function SignInPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toasts, toast, removeToast } = useToast();
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   
 
@@ -36,6 +39,7 @@ function SignInPageContent() {
   const originalState = searchParams.get('state');
   const originalCodeChallenge = searchParams.get('code_challenge');
   const originalCodeChallengeMethod = searchParams.get('code_challenge_method');
+  const forceLogin = searchParams.get('prompt') === 'login'; 
 
   const [authorizeRedirectUrl, setAuthorizeRedirectUrl] = useState<URL | null>(null);
 
@@ -51,6 +55,15 @@ function SignInPageContent() {
       if (originalCodeChallenge) url.searchParams.set('code_challenge', originalCodeChallenge);
       if (originalCodeChallengeMethod) url.searchParams.set('code_challenge_method', originalCodeChallengeMethod);
       setAuthorizeRedirectUrl(url);
+    }
+    if (originalClientId && originalRedirectUri) {
+      const clientContext = {
+        clientId: originalClientId,
+        redirectUri: originalRedirectUri,
+        state: originalState,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('auth_client_context', JSON.stringify(clientContext));
     }
   }, [
     authorizeRedirectUrl, originalClientId, originalRedirectUri, originalResponseType,
@@ -81,6 +94,67 @@ function SignInPageContent() {
   }, [
     router, getSession, originalClientId, originalRedirectUri, authorizeRedirectUrl, toast, t
   ]);
+
+   // 检查当前登录状态
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        setIsCheckingAuth(true);
+        
+        // 如果URL中有 prompt=login 参数，强制重新登录
+        if (forceLogin) {
+          // 先退出当前登录状态
+          await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include',
+          });
+          setIsCheckingAuth(false);
+          return;
+        }
+        
+        // 检查当前session
+        const sessionResponse = await fetch('/api/auth/session', {
+          credentials: 'include',
+        });
+        
+        if (sessionResponse.ok) {
+          const session = await sessionResponse.json() as { user?: User };        
+          if (session?.user) {
+            console.log('User already logged in:', session.user);
+            
+            // 用户已登录，直接跳转到授权流程
+            if (originalClientId && originalRedirectUri) {
+              const authorizeUrl = new URL('/api/auth/authorize', window.location.origin);
+              authorizeUrl.searchParams.set('client_id', originalClientId);
+              authorizeUrl.searchParams.set('redirect_uri', originalRedirectUri);
+              authorizeUrl.searchParams.set('response_type', 'code');
+              if (originalState) {
+                authorizeUrl.searchParams.set('state', originalState);
+              }
+              
+              
+              // 直接重定向到授权页面
+              window.location.href = authorizeUrl.toString();
+              return;
+            } else {
+              // 没有OAuth参数，重定向到用户profile
+              router.replace('/profile');
+              return;
+            }
+          }
+        }
+        
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, [originalClientId, originalRedirectUri, originalState, forceLogin, router]);
+
+
 
   // 处理错误信息
   useEffect(() => {
@@ -150,7 +224,7 @@ function SignInPageContent() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data : { message: string } = await response.json();
         toast.success(t('auth:success.sendSuccess'), data.message);
         
         const verifyRequestUrl = new URL(`/auth/verify-request`, window.location.origin);
@@ -164,7 +238,7 @@ function SignInPageContent() {
         
         window.location.href = verifyRequestUrl.toString();
       } else {
-        const errorData = await response.json();
+        const errorData: { error: string} = await response.json();
         toast.error(t('auth:errors.sendFailed'), errorData.error);
       }
     } catch (error) {
@@ -180,7 +254,7 @@ function SignInPageContent() {
         <div className="text-center p-8 bg-white rounded-lg shadow-md">
           <h1 className="text-2xl font-bold text-red-600 mb-4">{t('auth:invalidRequest')}</h1>
           <p className="text-gray-700">{t('auth:invalidRequestDesc')}</p>
-          <a href="/" className="mt-4 inline-block text-blue-500 hover:underline">{t('auth:returnHome')}</a>
+          <Link href="/" className="mt-4 inline-block text-blue-500 hover:underline">{t('auth:signup')}</Link>
         </div>
       </div>
     );
@@ -230,6 +304,18 @@ function SignInPageContent() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p className="text-gray-600">{t('common:loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+    // 显示检查登录状态的加载界面
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">检查登录状态...</p>
         </div>
       </div>
     );
@@ -432,7 +518,13 @@ function SignInPageContent() {
 export default function SignInPage() {
   return (
     <I18nProvider>
-      <SignInPageContent />
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        </div>
+      }>
+        <SignInPageContent />
+      </Suspense>
     </I18nProvider>
   );
 }

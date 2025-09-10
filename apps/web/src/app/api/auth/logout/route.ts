@@ -12,7 +12,11 @@ export async function POST(request: NextRequest) {
   console.log("--- /api/auth/unified-logout called ---");
   
   try {
-    const body = await request.json();
+    const body = await request.json() as {
+      user_id: string;
+      client_id?: string;
+      global_logout?: boolean;
+    };
     const { user_id, client_id, global_logout = true } = body;
 
     if (!user_id) {

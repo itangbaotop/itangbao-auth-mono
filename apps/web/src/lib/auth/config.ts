@@ -1,5 +1,5 @@
 // src/lib/auth/config.ts
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 import { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -11,6 +11,7 @@ import { eq, and } from "drizzle-orm";
 import { D1Adapter } from "@auth/d1-adapter";
 import { nanoid } from "nanoid";
 import { hashPassword } from "../utils/password";
+import { JWT } from "next-auth/jwt";
 
 export const runtime = "edge";
 
@@ -23,8 +24,10 @@ function getAuthFlags(env: Record<string, unknown>) {
   } as const;
 }
 
+type AuthConfigWithoutProviders = Omit<NextAuthConfig, 'providers'>;
+
 // 基础配置（不在顶层访问 env），providers 将在工厂函数中动态生成
-export const authConfig: NextAuthConfig = {
+export const authConfig: AuthConfigWithoutProviders = {
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
@@ -33,37 +36,22 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = (user as User).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        (session.user as any).id = token.sub!;
-        (session.user as any).role = token.role as string;
+        (session.user as User).id = token.sub!;
+        (session.user as User).role = token.role as string;
       }
       return session;
     },
-    async signOut({ token }) {
-      // 当用户通过 NextAuth 登出时，撤销相关的 OAuth refresh tokens
-      if (token?.sub) {
-        const { env } = await getCloudflareContext();
-        const db = getDb(env.DB);
-
-        // 撤销该用户的所有未撤销的 refresh tokens
-        await db
-          .update(refreshTokens)
-          .set({ isRevoked: true, updatedAt: new Date() })
-          .where(
-            and(
-              eq(refreshTokens.userId, token.sub),
-              eq(refreshTokens.isRevoked, false)
-            )
-          );
-      }
-    },
+    // ❌ 移除这个 - NextAuth v5 中不支持 signOut callback
+    // async signOut({ token }) {
+    //   // ...
+    // },
     async signIn({ user, account }) {
-
       if (
         account?.provider === "admin-credentials" ||
         account?.provider === "google-one-tap-credentials"
@@ -72,14 +60,14 @@ export const authConfig: NextAuthConfig = {
       }
 
       const { env } = await getCloudflareContext();
-      const db = getDb((env as any).DB);
+      const db = getDb((env).DB);
       const flags = getAuthFlags(env as unknown as Record<string, unknown>);
 
       // 检查用户是否已存在
       const existingUser = await db
         .select()
         .from(users)
-        .where(eq(users.email, (user as any).email!))
+        .where(eq(users.email, (user as User).email!))
         .limit(1);
 
       if (existingUser[0]) {
@@ -106,16 +94,13 @@ export const authConfig: NextAuthConfig = {
           );
 
           if (!existingAccount[0]) {
-            // 账户链接不存在，需要创建
-            // 但是我们不在这里创建，让 NextAuth 的 adapter 来处理
-            // 我们只需要确保不会阻止链接过程
             console.log("Account link will be created by adapter");
           }
         }
 
         // 设置用户角色
-        (user as any).role = existingUser[0].role;
-        (user as any).id = existingUser[0].id; // 重要：设置用户ID
+        (user as User).role = existingUser[0].role as string;
+        (user as User).id = existingUser[0].id; // 重要：设置用户ID
 
         if (account?.provider === "email" && !existingUser[0].emailVerified) {
           await db
@@ -130,7 +115,7 @@ export const authConfig: NextAuthConfig = {
         console.log("User does not exist, will be created");
 
         if (account?.provider === "github" || account?.provider === "google") {
-          (user as any).role = "user";
+          (user as User).role = "user";
           // 让 NextAuth adapter 来创建用户和账户链接
           return true;
         } else if (account?.provider === "email" && flags.enableMagicLink) {
@@ -138,19 +123,19 @@ export const authConfig: NextAuthConfig = {
             await db
               .insert(users)
               .values({
-                id: (user as any).id || nanoid(),
+                id: (user as User).id || nanoid(),
                 name:
-                  (user as any).name ||
-                  (user as any).email?.split("@")[0] ||
+                  (user as User).name ||
+                  (user as User).email?.split("@")[0] ||
                   "新用户",
-                email: (user as any).email!,
-                image: (user as any).image,
+                email: (user as User).email!,
+                image: (user as User).image,
                 role: "user",
                 emailVerified:
                   account?.provider === "email" ? new Date() : null,
               })
               .returning();
-            (user as any).role = "user";
+            (user as User).role = "user";
             return true;
           } catch (error) {
             console.error("自动注册失败:", error);
@@ -161,6 +146,48 @@ export const authConfig: NextAuthConfig = {
       return true;
     },
   },
+  // ✅ 添加 events 来处理 signOut
+  events: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async signOut(message: { session?: any } | { token?: any }) {
+      console.log('User signed out');
+      
+      // 安全地获取用户ID
+      let userId: string | undefined;
+      
+      if ('token' in message && message.token?.sub) {
+        userId = message.token.sub;
+      } else if ('session' in message && message.session?.user?.id) {
+        userId = message.session.user.id;
+      }
+      
+      
+      if (userId) {
+        try {
+          const { env } = await getCloudflareContext();
+          const db = getDb(env.DB);
+
+          // 撤销该用户的所有未撤销的 refresh tokens
+          await db
+            .update(refreshTokens)
+            .set({ isRevoked: true, updatedAt: new Date() })
+            .where(
+              and(
+                eq(refreshTokens.userId, userId),
+                eq(refreshTokens.isRevoked, false)
+              )
+            );
+          
+          console.log('Refresh tokens revoked for user:', userId);
+        } catch (error) {
+          console.error('Failed to revoke refresh tokens:', error);
+        }
+      }
+    },
+    async signIn({ user, account, profile, isNewUser }) {
+      console.log('User signed in:', user.email);
+    },
+  },
   session: { strategy: "jwt" },
   trustHost: true,
 };
@@ -168,7 +195,7 @@ export const authConfig: NextAuthConfig = {
 // 导出 auth 函数（在这里动态读取 env 并组装 providers 与 adapter）
 export const { handlers, auth, signIn, signOut } = NextAuth(async () => {
   const context = await getCloudflareContext();
-  const env: any = context.env;
+  const env: CloudflareEnv = context.env;
   const flags = getAuthFlags(env as unknown as Record<string, unknown>);
   const db = getDb(env.DB);
 
@@ -209,7 +236,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(async () => {
           name: user[0].name,
           image: user[0].image,
           role: user[0].role,
-        } as any;
+        } as User;
       },
     }),
   ];

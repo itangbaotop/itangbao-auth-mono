@@ -1,7 +1,7 @@
 {
   "name": "itangbao-auth-sdk",
-  "version": "0.1.0",
-  "description": "JavaScript SDK for AuthHub authentication service",
+  "version": "0.2.0",
+  "description": "JavaScript SDK for itangbao-auth authentication service",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

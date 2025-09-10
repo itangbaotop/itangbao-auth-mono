@@ -11,8 +11,9 @@ export const runtime = "edge";
 // 删除 OAuth 配置
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     await requireAdmin();
     
@@ -20,7 +21,7 @@ export async function DELETE(
     const db = getDb(env.DB);
     
     await db.delete(appOAuthConfigs)
-      .where(eq(appOAuthConfigs.id, params.id));
+      .where(eq(appOAuthConfigs.id, id));
     
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -34,15 +35,16 @@ export async function DELETE(
 // 切换启用状态
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     await requireAdmin();
     
     const { env } = await getCloudflareContext();
     const db = getDb(env.DB);
     
-    const body = await request.json();
+    const body = await request.json() as { isEnabled: boolean };
     const { isEnabled } = body;
     
     const updatedConfig = await db.update(appOAuthConfigs)
@@ -50,7 +52,7 @@ export async function PATCH(
         isEnabled,
         updatedAt: new Date(),
       })
-      .where(eq(appOAuthConfigs.id, params.id))
+      .where(eq(appOAuthConfigs.id, id))
       .returning({
         id: appOAuthConfigs.id,
         provider: appOAuthConfigs.provider,

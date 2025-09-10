@@ -7,10 +7,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { clientId: string } }
+    props: { params: Promise<{ clientId: string }> }
 ) {
     try {
-
+        const params = await props.params;
+        
         const { env } = await getCloudflareContext();
         const db = getDb(env.DB);
         const application = await db.select()

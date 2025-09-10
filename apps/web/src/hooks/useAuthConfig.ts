@@ -19,7 +19,7 @@ export function useAuthConfig() {
       try {
         const response = await fetch("/api/auth/config");
         if (response.ok) {
-          const configData = await response.json();
+          const configData = await response.json() as AuthConfig;
           setConfig(configData);
         } else {
           setError("获取配置失败");

@@ -13,6 +13,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   getAccessToken: () => Promise<string | null>;
+  getProfileUrl: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -91,6 +92,9 @@ export function AuthProvider({
     },
     getAccessToken: async () => {
       return await getAccessToken();
+    },
+    getProfileUrl: async () => {
+      return await client.getUserProfileUrl();
     }
   };
 
