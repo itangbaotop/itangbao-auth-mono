@@ -1,146 +1,87 @@
-# 🍬 itangbao认证SDK - 单仓库项目
+# 🍬 itangbao认证服务 - Monorepo项目
 
-一个现代化的TypeScript认证SDK，提供完整的用户认证解决方案，支持React应用快速集成。
+一个基于Next.js的现代化认证服务后端，配套完整的TypeScript SDK和React组件库，专为现代Web应用设计的认证解决方案。
 
 [![npm version](https://img.shields.io/npm/v/itangbao-auth-sdk)](https://www.npmjs.com/package/itangbao-auth-sdk)
+[![npm version](https://img.shields.io/npm/v/itangbao-auth-react)](https://www.npmjs.com/package/itangbao-auth-react)
+[![npm version](https://img.shields.io/npm/v/itangbao-auth-types)](https://www.npmjs.com/package/itangbao-auth-types)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 
-## 🎯 项目简介
+## 🎯 项目概览
 
-`itangbao-auth-mono` 是一个基于TypeScript构建的认证SDK单仓库项目，专为现代Web应用设计。它提供了从底层认证逻辑到React组件的完整解决方案，帮助开发者快速集成用户认证功能。
+本项目采用**Monorepo架构**，基于**Turborepo**和**pnpm workspaces**构建，提供从认证服务后端到前端SDK的完整认证解决方案：
+
+- **🏗️ 认证服务后端** (`apps/web`) - 基于Next.js的完整OAuth2认证服务
+- **📦 核心SDK** (`packages/sdk`) - TypeScript认证客户端SDK
+- **⚛️ React集成** (`packages/react`) - React专用组件和Hooks
+- **🔧 类型定义** (`packages/types`) - 共享TypeScript类型定义
 
 ## 🏗️ 项目架构
 
-本项目采用Monorepo架构，基于Turborepo构建，包含以下核心包：
+```
+itangbao-auth-mono/
+├── apps/
+│   └── web/                    # 🏗️ 认证服务后端 (Next.js)
+│       ├── src/
+│       │   ├── app/           # Next.js App Router
+│       │   ├── lib/          # 服务端认证逻辑
+│       │   ├── db/           # 数据库模型和迁移
+│       │   └── middleware.ts # 认证中间件
+│       └── package.json
+├── packages/
+│   ├── types/                 # 🔧 共享类型定义
+│   ├── sdk/                   # 📦 核心认证SDK
+│   ├── react/                 # ⚛️ React组件库
+│   └── ui/                    # 🎨 通用UI组件
+├── examples/
+│   └── test-auth/            # 🧪 测试应用示例
+└── turbo.json               # Turborepo配置
+```
 
-### 📦 认证核心包
+## 📦 核心包介绍
 
-| 包名 | 描述 | 版本 |
-|---|---|---|
-| `itangbao-auth-types` | TypeScript类型定义 | ![npm](https://img.shields.io/npm/v/itangbao-auth-types) |
-| `itangbao-auth-sdk` | 核心认证SDK | ![npm](https://img.shields.io/npm/v/itangbao-auth-sdk) |
-| `itangbao-auth-react` | React专用组件库 | ![npm](https://img.shields.io/npm/v/itangbao-auth-react) |
+### 🏗️ 认证服务后端 (`apps/web`)
+基于Next.js 15的完整认证服务，提供：
+- **OAuth 2.0** 授权服务器
+- **JWT令牌** 颁发和验证
+- **用户管理** 注册、登录、找回密码
+- **会话管理** 自动续期和失效
+- **API路由** RESTful认证API
+- **数据库集成** 支持PostgreSQL
 
-### 🛠️ 开发工具包
+### 📦 核心SDK (`itangbao-auth-sdk`)
+轻量级的TypeScript认证客户端：
+- **认证客户端** - OAuth2流程封装
+- **令牌管理** - JWT令牌自动刷新
+- **HTTP客户端** - 带认证的API调用
+- **类型安全** - 完整的TypeScript支持
 
-- `eslint-config` - ESLint配置共享
-- `typescript-config` - TypeScript配置共享
-- `ui` - 通用UI组件库
+### ⚛️ React集成 (`itangbao-auth-react`)
+React应用专用组件库：
+- **AuthProvider** - 全局认证状态管理
+- **useAuth Hook** - 认证状态访问
+- **预置组件** - 登录按钮、用户头像等
+- **路由保护** - 受保护路由组件
+
+### 🔧 类型定义 (`itangbao-auth-types`)
+共享的TypeScript类型定义：
+- **认证相关** - 用户、令牌、配置类型
+- **API响应** - 标准化的API响应格式
+- **OAuth规范** - OAuth2标准类型定义
 
 ## 🚀 快速开始
 
-### 安装
-
-#### 使用npm
-```bash
-npm install itangbao-auth-react
-```
-
-#### 使用pnpm（推荐）
-```bash
-pnpm add itangbao-auth-react
-```
-
-#### 使用yarn
-```bash
-yarn add itangbao-auth-react
-```
-
-### 基础使用
-
-#### 1. 配置认证客户端
-
-```typescript
-// src/config/auth.ts
-import { AuthHubClient } from 'itangbao-auth-sdk';
-
-const authClient = new AuthHubClient({
-  clientId: 'your-client-id',
-  redirectUri: 'http://localhost:3000/callback',
-  scopes: ['openid', 'profile', 'email'],
-  authUrl: 'https://your-auth-server.com/oauth',
-  clientSecret: 'your-client-secret' // 仅服务端需要
-});
-
-export default authClient;
-```
-
-#### 2. React集成
-
-```typescript
-// src/app/layout.tsx
-import { AuthProvider } from 'itangbao-auth-react';
-import authClient from '@/config/auth';
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <AuthProvider client={authClient}>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </AuthProvider>
-  );
-}
-```
-
-#### 3. 使用认证组件
-
-```typescript
-// src/app/login/page.tsx
-import { LoginButton, useAuth } from 'itangbao-auth-react';
-
-export default function LoginPage() {
-  const { isAuthenticated, user, logout } = useAuth();
-
-  if (isAuthenticated) {
-    return (
-      <div>
-        <h1>欢迎, {user?.name}</h1>
-        <button onClick={logout}>退出登录</button>
-      </div>
-    );
-  }
-
-  return <LoginButton />;
-}
-```
-
-## 📋 功能特性
-
-### 🔐 认证功能
-- **OAuth 2.0** - 完整的OAuth 2.0流程支持
-- **JWT令牌** - 支持JWT令牌的生成和验证
-- **会话管理** - 自动处理会话过期和刷新
-- **权限控制** - 基于角色的权限控制
-
-### 🎨 React组件
-- **AuthProvider** - 全局认证状态管理
-- **LoginButton** - 一键登录按钮
-- **ProtectedRoute** - 路由保护组件
-- **useAuth Hook** - 认证状态访问Hook
-
-### 🛡️ 安全特性
-- **CSRF保护** - 跨站请求伪造防护
-- **XSS防护** - 跨站脚本攻击防护
-- **安全存储** - 敏感信息安全存储
-- **HTTPS强制** - 生产环境HTTPS强制
-
-## 🏃‍♂️ 开发指南
-
-### 环境要求
+### 📋 环境要求
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
+- cloudflare d1
 
-### 本地开发
+### 🔧 本地开发设置
 
 #### 1. 克隆项目
 ```bash
-git clone https://github.com/your-org/itangbao-auth-mono.git
+git clone https://github.com/itangbaotop/itangbao-auth-mono.git
 cd itangbao-auth-mono
 ```
 
@@ -149,104 +90,296 @@ cd itangbao-auth-mono
 pnpm install
 ```
 
-#### 3. 启动开发环境
+#### 3. 设置环境变量
 ```bash
-# 构建所有包
-pnpm build
+# 复制环境变量模板
+cp apps/web/.env.example apps/web/.env.local
+
+# 编辑 .env.local 文件，配置数据库和密钥
+```
+
+#### 4. 初始化数据库
+```bash
+# 运行数据库迁移
+pnpm --filter web db:push
+
+# 或者使用Docker
+pnpm --filter web db:dev
+```
+
+#### 5. 启动开发环境
+```bash
+# 启动所有服务（推荐）
+pnpm dev
+
+# 单独启动认证服务
+pnpm --filter web dev
 
 # 启动测试应用
-pnpm --filter test-app dev
-
-# 构建特定包
-pnpm --filter itangbao-auth-sdk build
+pnpm --filter test-auth dev
 ```
+
+### 📦 安装SDK
+
+#### 在React项目中使用
+```bash
+# 安装React SDK
+npm install itangbao-auth-react
+
+# 或
+pnpm add itangbao-auth-react
+```
+
+#### 在普通TypeScript项目中使用
+```bash
+# 安装核心SDK
+npm install itangbao-auth-sdk
+
+# 或
+pnpm add itangbao-auth-sdk
+```
+
+## 💻 使用示例
+
+### 🏗️ 认证服务后端配置
+
+#### 环境变量配置
+```bash
+# apps/web/.env.local
+DATABASE_URL="postgresql://user:password@localhost:5432/itangbao_auth"
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key"
+
+# OAuth提供商配置
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+```
+
+### ⚛️ React应用集成
+
+#### 1. 配置认证客户端
+```typescript
+// src/lib/auth-client.ts
+import { AuthHubClient } from 'itangbao-auth-sdk';
+
+export const authClient = new AuthHubClient({
+  baseUrl: process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:3000',
+  clientId: process.env.NEXT_PUBLIC_CLIENT_ID!,
+  redirectUri: typeof window !== 'undefined' 
+    ? `${window.location.origin}/callback` 
+    : '',
+  scopes: ['openid', 'profile', 'email'],
+});
+```
+
+#### 2. 设置AuthProvider
+```typescript
+// src/app/providers.tsx
+'use client';
+
+import { AuthProvider } from 'itangbao-auth-react';
+import { authClient } from '@/lib/auth-client';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthProvider client={authClient}>
+      {children}
+    </AuthProvider>
+  );
+}
+```
+
+#### 3. 使用认证功能
+```typescript
+// src/app/login/page.tsx
+'use client';
+
+import { useAuth, LoginButton } from 'itangbao-auth-react';
+
+export default function LoginPage() {
+  const { isAuthenticated, user, login, logout } = useAuth();
+
+  if (isAuthenticated) {
+    return (
+      <div>
+        <h1>欢迎回来, {user?.name}</h1>
+        <button onClick={() => logout()}>退出登录</button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1>登录</h1>
+      <LoginButton />
+    </div>
+  );
+}
+```
+
+#### 4. 保护路由
+```typescript
+// src/components/protected-route.tsx
+'use client';
+
+import { useAuth } from 'itangbao-auth-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) {
+    return <div>加载中...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
+```
+
+## 🔧 开发命令
 
 ### 包管理命令
 
 ```bash
+# 安装所有依赖
+pnpm install
+
 # 构建所有包
 pnpm build
 
-# 开发模式
+# 开发模式（带热重载）
 pnpm dev
 
-# 代码检查
+# 代码质量检查
 pnpm lint
 
 # 类型检查
 pnpm type-check
 
-# 发布包
-pnpm release
+# 运行测试
+pnpm test
+
+# 清理构建缓存
+pnpm clean
 ```
 
-### 构建特定包
+### 特定包命令
+
 ```bash
-# 构建SDK包
-pnpm --filter itangbao-auth-sdk build
+# 认证服务相关
+pnpm --filter web dev          # 启动认证服务
+pnpm --filter web build        # 构建认证服务
+pnpm --filter web start        # 启动生产服务
 
-# 构建React包
-pnpm --filter itangbao-auth-react build
+# SDK开发
+pnpm --filter sdk build        # 构建SDK
+pnpm --filter react build      # 构建React包
+pnpm --filter types build      # 构建类型包
 
-# 构建类型包
-pnpm --filter itangbao-auth-types build
+# 测试应用
+pnpm --filter test-auth dev    # 启动测试应用
 ```
 
-## 📁 项目结构
+### 数据库命令
 
+```bash
+# 数据库操作（在apps/web目录下）
+cd apps/web
+
+# 启动数据库（Docker）
+pnpm db:dev
+
+# 运行迁移
+pnpm db:push
+
+# 重置数据库
+pnpm db:reset
+
+# 生成客户端
+pnpm db:generate
 ```
-itangbao-auth-mono/
-├── packages/
-│   ├── types/           # TypeScript类型定义
-│   │   ├── src/
-│   │   │   └── index.ts
-│   │   └── package.json
-│   ├── sdk/            # 核心认证SDK
-│   │   ├── src/
-│   │   │   └── index.ts
-│   │   └── package.json
-│   ├── react/          # React专用组件
-│   │   ├── src/
-│   │   │   ├── AuthProvider.tsx
-│   │   │   └── hooks.ts
-│   │   └── package.json
-│   ├── ui/             # 通用UI组件
-│   ├── eslint-config/   # ESLint配置
-│   └── typescript-config/ # TypeScript配置
-├── examples/
-│   └── test-app/       # 测试应用示例
-│       ├── src/
-│       └── package.json
-├── apps/
-│   └── web/            # 生产应用
-├── pnpm-workspace.yaml # pnpm工作区配置
-├── turbo.json          # Turborepo配置
-└── README.md           # 项目文档
+
+## 📊 项目状态
+
+| 组件 | 状态 | 版本 | 描述 |
+|---|---|---|---|
+| 认证服务后端 | ✅ 生产就绪 | - | Next.js 15认证服务 |
+| itangbao-auth-sdk | ✅ 已发布 | 0.1.2 | 核心认证SDK |
+| itangbao-auth-react | ✅ 已发布 | 0.1.2 | React组件库 |
+| itangbao-auth-types | ✅ 已发布 | 0.1.2 | 类型定义 |
+
+## 🧪 测试
+
+### 单元测试
+```bash
+# 运行所有测试
+pnpm test
+
+# 运行特定包测试
+pnpm --filter sdk test
+pnpm --filter react test
+```
+
+### 集成测试
+```bash
+# 启动测试环境
+pnpm test:e2e
+
+# 运行端到端测试
+pnpm test:e2e:run
+```
+
+
+### SDK发布
+
+```bash
+# 版本更新
+pnpm changeset
+
+# 发布到npm
+pnpm release
 ```
 
 ## 🔗 相关链接
 
-- [📖 完整文档](https://auth.itangbao.com) (待更新)
-- [🚀 在线示例](https://demo.itangbao.com) (待更新)
-- [📦 npm包](https://www.npmjs.com/search?q=itangbao-auth)
-- [🐛 问题反馈](https://github.com/your-org/itangbao-auth-mono/issues)
+- 📦 [itangbao-auth-sdk - npm](https://www.npmjs.com/package/itangbao-auth-sdk)
+- ⚛️ [itangbao-auth-react - npm](https://www.npmjs.com/package/itangbao-auth-react)
+- 🔧 [itangbao-auth-types - npm](https://www.npmjs.com/package/itangbao-auth-types)
+- 📖 [完整文档](https://auth.itangbao.com) (建设中)
+- 🚀 [在线演示](https://demo.itangbao.com) (建设中)
+- 🐛 [问题反馈](https://github.com/your-org/itangbao-auth-mono/issues)
 
 ## 🤝 贡献指南
 
 我们欢迎所有形式的贡献！
 
-### 如何贡献
+### 快速开始
 1. Fork 这个项目
-2. 创建您的功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开一个 Pull Request
+5. 创建 Pull Request
 
 ### 开发规范
 - 遵循 [Conventional Commits](https://conventionalcommits.org/)
 - 使用 ESLint + Prettier 进行代码格式化
 - 所有代码必须通过 TypeScript 类型检查
 - 新增功能需要包含单元测试
+- 使用 Changesets 进行版本管理
 
 ## 📄 许可证
 
@@ -257,15 +390,9 @@ itangbao-auth-mono/
 - **核心维护者**: itangbao
 - **项目主页**: [itangbao-auth-mono](https://github.com/your-org/itangbao-auth-mono)
 
-## 📊 项目状态
-
-- ✅ **稳定版本** - 已发布到npm
-- ✅ **生产就绪** - 已在多个生产环境使用
-- ✅ **活跃开发** - 持续维护和更新
-
 ---
 
 <p align="center">
-  <strong>🍬 itangbaoSDK - 让认证变得简单</strong><br>
-  用TypeScript构建，为现代Web应用而生
+  <strong>🍬 itangbao认证服务 - 让认证变得简单</strong><br>
+  基于Next.js构建，为现代Web应用提供完整的认证解决方案
 </p>
