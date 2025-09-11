@@ -5,4 +5,3 @@ export * from './ApiClient';
 export * from './LoginButton';
 export * from './LogoutButton';
 export * from './UserInfo';
-export * from './UserDropdown';

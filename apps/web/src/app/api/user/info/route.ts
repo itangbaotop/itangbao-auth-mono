@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       sub: user[0].id,           // subject - 用户唯一标识
       name: user[0].name,
       email: user[0].email,
-      picture: user[0].image,
+      image: user[0].image,
       email_verified: !!user[0].emailVerified,
       role: user[0].role,        // 自定义字段
       created_at: user[0].createdAt,

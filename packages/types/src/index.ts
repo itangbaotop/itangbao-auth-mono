@@ -33,7 +33,7 @@ export interface UserInfoResponse {
   sub: string;
   name?: string;
   email?: string;
-  picture?: string;
+  image?: string;
   email_verified?: boolean;
   role?: string;
   created_at?: string;

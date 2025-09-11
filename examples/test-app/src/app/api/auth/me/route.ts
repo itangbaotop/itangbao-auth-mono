@@ -9,20 +9,20 @@ export async function GET(request: NextRequest) {
   const accessToken = request.cookies.get('auth-token')?.value;
   const refreshToken = request.cookies.get('refresh-token')?.value;
 
-  if (!accessToken) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  }
-
   try {
-    const isValid = await authService.verifyToken(accessToken);
+    if (accessToken) {
+      const isValid = await authService.verifyToken(accessToken);
     
-    if (isValid) {
-      const user = await authService.getUserInfo(accessToken);
-      return NextResponse.json({ user });
+      if (isValid) {
+        const user = await authService.getUserInfo(accessToken);
+        return NextResponse.json({ user });
+      }
     }
-
+    
     if (refreshToken) {
+      console.log('exec refreshToken', refreshToken);
       const tokens = await authService.refreshTokens(refreshToken);
+      console.log('refreshTokens', tokens);
       const response = NextResponse.json({ user: tokens.user });
       CookieManager.setAuthCookies(response, tokens);
       return response;
