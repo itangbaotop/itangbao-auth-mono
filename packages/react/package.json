@@ -1,28 +1,64 @@
 {
   "name": "itangbao-auth-react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React components for itangbao-auth authentication",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts", 
+      "default": "./dist/server/index.js"
+    },
+    "./server/nextjs": {
+      "types": "./dist/server/adapters/nextjs.d.ts",
+      "default": "./dist/server/adapters/nextjs.js"
+    },
+    "./server/express": {
+      "types": "./dist/server/adapters/express.d.ts",
+      "default": "./dist/server/adapters/express.js"
+    },
+    "./server/edge": {
+      "types": "./dist/server/adapters/edge.d.ts",
+      "default": "./dist/server/adapters/edge.js"
+    }
+  },
+  "keywords": [
+    "auth",
+    "authentication",
+    "react",
+    "nextjs",
+    "oauth",
+    "oidc"
+  ],
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "clean": "rm -rf dist"
+    "build": "tsc --skipLibCheck",
+    "dev": "tsc --watch --skipLibCheck",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "itangbao-auth-sdk": "workspace:*",
     "itangbao-auth-types": "workspace:*"
   },
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
-    "react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "typescript": "^5.0.0"
   },
   "publishConfig": {
