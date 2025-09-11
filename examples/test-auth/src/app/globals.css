@@ -1,0 +1,25 @@
+/* Tailwind v4 正确写法 */
+@import "tailwindcss";
+
+/* 告诉 v4 扫描这些源文件（相对路径按你的项目调整） */
+@source "./app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "./components/**/*.{js,ts,jsx,tsx,mdx}";
+@source "./pages/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../node_modules/itangbao-auth-react/**/*.{js,ts,jsx,tsx}"; /* 关键：扫描你的包 */
+
+/* 其余自定义样式 */
+:root { --background: #ffffff; --foreground: #171717; }
+@media (prefers-color-scheme: dark) {
+  :root { --background: #0a0a0a; --foreground: #ededed; }
+}
+body { background: var(--background); color: var(--foreground); font-family: Arial, Helvetica, sans-serif; }
+
+/* 建议，避免 img 基线空隙导致“顶住”错觉 */
+img { display: block; }
+
+/* 可选：毛玻璃与滚动条 */
+@supports (backdrop-filter: blur(20px)) { .backdrop-blur-xl { backdrop-filter: blur(20px); } }
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(156,163,175,.5); border-radius: 2px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(156,163,175,.8); }
