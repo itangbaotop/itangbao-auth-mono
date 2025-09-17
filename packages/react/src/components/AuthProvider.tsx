@@ -17,6 +17,7 @@ interface AuthContextType {
   refresh: () => Promise<User | null>;
   getAccessToken: () => Promise<string | null>;
   getProfileUrl: () => string;
+  getLoginUrl: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,6 +81,10 @@ export function AuthProvider({
     return authClient.generateProfileUrl();
   };
 
+   const getLoginUrl = async () => {
+    return await authClient.generateLoginUrl();
+  };
+
   useEffect(() => {
     const initAuth = async () => {
       setIsLoading(true);
@@ -99,6 +104,7 @@ export function AuthProvider({
     refresh,
     getAccessToken,
     getProfileUrl,
+    getLoginUrl,
   }), [user, isLoading]);
 
   return (
