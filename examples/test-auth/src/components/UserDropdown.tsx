@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useUserActions, useUserInfo } from 'itangbao-auth-react';
+import { LoginButton, useUserActions, useUserInfo } from 'itangbao-auth-react';
 
 export function UserDropdown() {
   const { handleLogout, handleProfile } = useUserActions();
@@ -12,7 +12,11 @@ export function UserDropdown() {
 
   console.log('userInfo', userInfo);
   if (!isAuthenticated || !userInfo) {
-    return null;
+    return (
+      <div className="flex items-center space-x-4">
+          <LoginButton className='text-gray-600 hover:text-purple-600 transition-colors'>登录</LoginButton>
+        </div>
+    );
   }
 
   return (

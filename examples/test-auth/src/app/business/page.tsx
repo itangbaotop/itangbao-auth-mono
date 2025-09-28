@@ -1,43 +1,64 @@
-// app/page.tsx
 'use client';
 
-import { LoginButton, ProtectedRoute, useAuthContext } from 'itangbao-auth-react';
-import { UserDropdown } from '@/components/UserDropdown';
+import { useState } from 'react';
+import { ProtectedRoute, useApiClient } from 'itangbao-auth-react';
 
-export default function HomePage() {
-  const { isAuthenticated, isLoading, user } = useAuthContext();
-  console.log('isAuthenticated', isAuthenticated);
+function BusinessContent() {
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Use the apiClient hook, which has the auto-refresh logic built-in.
+  const apiClient = useApiClient();
+
+  const handleFetchData = async () => {
+    setIsLoading(true);
+    setError(null);
+    setData(null);
+
+    try {
+      // This call will automatically trigger the 401 -> refresh -> retry flow.
+      const response = await apiClient.get('/api/some');
+      setData(response.data.data);
+    } catch (err: any) {
+      setError(err.message || 'An unknown error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-4">Business Data Page</h1>
+      <p className="text-gray-600 mb-6">
+        This page is protected. Click the button below to fetch sensitive data. 
+        If your access token is expired, the system will attempt to refresh it silently before retrying the request.
+      </p>
+
+      <button
+        onClick={handleFetchData}
+        disabled={isLoading}
+        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+      >
+        {isLoading ? 'Fetching...' : 'Fetch Business Data'}
+      </button>
+
+      <div className="mt-8 p-4 border rounded-md bg-gray-50 min-h-[150px]">
+        <h2 className="text-lg font-semibold text-gray-800">API Response:</h2>
+        {isLoading && <p className="text-gray-500">Loading...</p>}
+        {error && <pre className="text-red-500 bg-red-50 p-2 rounded-md">Error: {error}</pre>}
+        {data && <pre className="text-green-700 bg-green-50 p-2 rounded-md">{JSON.stringify(data, null, 2)}</pre>}
+        {!isLoading && !error && !data && <p className="text-gray-500">Click the button to see the result.</p>}
+      </div>
+    </div>
+  );
+}
+
+// Wrap the component with ProtectedRoute to ensure the user is logged in
+export default function BusinessPage() {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-semibold text-gray-900">我的应用</h1>
-              </div>
-              {isAuthenticated && (
-                <div className="flex items-center space-x-4">
-                  <UserDropdown />
-                </div>
-              )}
-              {!isAuthenticated && (
-                <div className="flex items-center space-x-4">
-                  <LoginButton>登录</LoginButton>
-                </div>
-              )}
-            </div>
-          </div>
-        </nav>
-
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
-              <p className="text-gray-500">这里是您的应用内容</p>
-            </div>
-          </div>
-        </main>
-      </div>
+      <BusinessContent />
     </ProtectedRoute>
   );
 }

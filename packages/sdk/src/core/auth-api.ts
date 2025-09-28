@@ -28,7 +28,7 @@ export class AuthApi {
     }
   }
 
-  async refreshToken(): Promise<AuthTokens | null> {
+  async refreshToken(): Promise<AuthTokens> {
     try {
       const { data } = await this.http.post<{
         accessToken: string;
@@ -41,8 +41,10 @@ export class AuthApi {
         refreshToken: data.refreshToken,
         expiresAt: Date.now() + data.expiresIn * 1000,
       };
-    } catch {
-      return null;
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      // 将错误继续向上抛出，以便调用方能捕获它
+      throw error;
     }
   }
 

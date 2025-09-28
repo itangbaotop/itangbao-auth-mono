@@ -19,31 +19,13 @@ export function useApiClient(baseUrl: string = '') {
     setLoading(prev => ({ ...prev, [requestKey]: true }));
 
     try {
-      const token = await getAccessToken();
-      const headers: Record<string, string> = { 
-        ...options.headers as Record<string, string>
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const result = await httpClient.request(url, {
-        ...options,
-        headers,
-      });
-
-      return result;
-    } catch (error: any) {
-      if (error.message?.includes('401')) {
-        window.location.href = '/login';
-        return;
-      }
-      throw error;
+      // Access Token 的获取和设置由 HttpClient 内部处理，这里不再需要
+      // 因为 cookie 是自动发送的 (credentials: 'include')
+      return await httpClient.request(url, options);
     } finally {
       setLoading(prev => ({ ...prev, [requestKey]: false }));
     }
-  }, [httpClient, getAccessToken]);
+  }, [httpClient]);
 
   const get = useCallback((url: string) => {
     return request(url, { method: 'GET' });

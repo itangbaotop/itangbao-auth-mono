@@ -1,16 +1,24 @@
-import { getUserId } from "@/app/lib/server-utils";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth/server-utils';
 
+export async function GET(request: NextRequest) {
+  // Use the standard utility to protect the route.
+  const user = await getUserFromRequest(request);
 
-export async function GET(req: NextRequest) {
-    const userId = await getUserId(req);
-    console.log(userId);
-    if (!userId) {
-        return new Response('Unauthorized', { status: 401 });
-    }
-  return new Response('Hello, world!');
-}
+  // If getUserFromRequest returns null (due to an invalid/expired token),
+  // return a 401. This is the trigger for our frontend's refresh logic.
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-export async function POST(req: Request) {
-  return new Response('Hello, world!');
+  // If the token is valid, return some mock business data.
+  // This is the data we expect to see after a successful token refresh and retry.
+  return NextResponse.json({
+    data: {
+      projectId: 'project-123',
+      businessName: 'Confidential Business Data',
+      reportDate: new Date().toISOString(),
+      accessedBy: user.name,
+    },
+  });
 }

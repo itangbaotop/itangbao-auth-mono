@@ -137,9 +137,11 @@ async function handleAuthorizationCode(params: handleTokenParams, db: DrizzleD1D
     refresh_token,
     scope: authCodeRecord[0].scope,
     userinfo: {
+      sub: user[0].id,
       id: user[0].id,
       name: user[0].name,
       email: user[0].email,
+      email_verified: user[0].emailVerified,
       image: user[0].image,
       // 其他需要的用户信息
     }
@@ -224,9 +226,11 @@ async function handleRefreshToken(params: handleTokenParams, db: DrizzleD1Databa
     refresh_token: new_refresh_token,
     scope: refreshTokenRecord[0].scope,
     userinfo: {
+      sub: user[0].id,
       id: user[0].id,
       name: user[0].name,
       email: user[0].email,
+      email_verified: user[0].emailVerified,
       image: user[0].image,
       // 其他需要的用户信息
     }

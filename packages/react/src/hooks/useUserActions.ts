@@ -11,9 +11,9 @@ export function useUserActions() {
     login();
   }, [login]);
 
-  const handleLogout = useCallback(async () => {
+  const handleLogout = useCallback(async (redirectUrl: string = '/') => {
     await logout();
-    window.location.href = '/';
+    window.location.href = redirectUrl;
   }, [logout]);
 
   const handleProfile = useCallback(() => {

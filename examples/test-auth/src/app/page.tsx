@@ -3,6 +3,7 @@
 
 import { LoginButton, useAuthContext } from 'itangbao-auth-react';
 import { UserDropdown } from '@/components/UserDropdown';
+import Link from 'next/link';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading, user } = useAuthContext();
@@ -31,6 +32,15 @@ export default function HomePage() {
         </nav>
 
         <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12">
+              <h2 className="text-2xl font-semibold text-gray-900">欢迎来到我的应用</h2>
+              <p className="text-gray-500">这是一个基于itangbao-auth的应用示例。</p>
+            </div>
+          </div>
+          <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+            <Link href="/business">去业务页面</Link>
+          </button>
           <div className="px-4 py-6 sm:px-0">
             <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
               <p className="text-gray-500">这里是您的应用内容</p>
