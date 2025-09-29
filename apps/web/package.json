@@ -4,14 +4,15 @@
 	"private": true,
 	"scripts": {
 		"dev": "next dev -p 8900 --turbopack",
-		"build": "next build",
+		"build": "opennextjs-cloudflare build",
 		"start": "next start",
 		"lint": "next lint",
-		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+		"deploy": "opennextjs-cloudflare deploy",
 		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
 		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
 		"db:generate": "drizzle-kit generate",
-		"db:migrate:local": "wrangler d1 migrations apply itangbao-auth --local"
+		"db:migrate:local": "wrangler d1 migrations apply itangbao-auth --local",
+		"db:migrate:remote": "wrangler d1 migrations apply itangbao-auth --remote"
 	},
 	"dependencies": {
 		"@auth/d1-adapter": "^1.10.0",

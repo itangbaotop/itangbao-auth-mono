@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "clean": "turbo run clean",
+    "clean": "rimraf .next node_modules",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build --filter=./packages/* && changeset publish"
@@ -16,7 +16,8 @@
     "@changesets/cli": "^2.29.6",
     "prettier": "^3.6.2",
     "turbo": "^2.5.6",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "wrangler": "^4.40.2"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
