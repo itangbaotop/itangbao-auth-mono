@@ -2,7 +2,7 @@
 "use client";
 
 import { useCallback, useState, useMemo } from 'react';
-import { HttpClient } from 'itangbao-auth-sdk';
+import { ApiClient, HttpClient } from 'itangbao-auth-sdk';
 import { useAuthContext } from '../components/AuthProvider';
 
 export function useApiClient(baseUrl: string = '') {
@@ -43,5 +43,5 @@ export function useApiClient(baseUrl: string = '') {
     get,
     post,
     loading,
-  }), [request, get, post, loading]);
+  } as ApiClient), [request, get, post, loading]);
 }

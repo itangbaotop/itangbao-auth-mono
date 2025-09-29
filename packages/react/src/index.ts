@@ -12,6 +12,7 @@ export { ProtectedRoute } from './components/ProtectedRoute';
 export { LoginButton } from './components/LoginButton';
 export { LogoutButton } from './components/LogoutButton';
 export { ServiceWorkerRegistrar } from './components/ServiceWorkerRegistrar';
+export type { ApiClient, ApiClientSuccessResponse  } from 'itangbao-auth-sdk';
 
 // 类型重新导出
 export type { 

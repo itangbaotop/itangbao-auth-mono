@@ -11,6 +11,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // if (user && user.role !== "admin") {
+  //   let errorMessage = '没有权限';
+  //   return NextResponse.json({ error: errorMessage }, { status: 403 });
+  // }
   // If the token is valid, return some mock business data.
   // This is the data we expect to see after a successful token refresh and retry.
   return NextResponse.json({

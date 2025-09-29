@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProtectedRoute, useApiClient } from 'itangbao-auth-react';
+import { ApiClient, ProtectedRoute, useApiClient } from 'itangbao-auth-react';
 
 function BusinessContent() {
   const [data, setData] = useState<any>(null);
@@ -9,7 +9,7 @@ function BusinessContent() {
   const [isLoading, setIsLoading] = useState(false);
   
   // Use the apiClient hook, which has the auto-refresh logic built-in.
-  const apiClient = useApiClient();
+  const apiClient: ApiClient = useApiClient();
 
   const handleFetchData = async () => {
     setIsLoading(true);
@@ -21,6 +21,8 @@ function BusinessContent() {
       const response = await apiClient.get('/api/some');
       setData(response.data.data);
     } catch (err: any) {
+      console.error('Error fetching business data:', err);
+      console.error('Error message:', err.message);
       setError(err.message || 'An unknown error occurred.');
     } finally {
       setIsLoading(false);

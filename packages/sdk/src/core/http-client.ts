@@ -8,6 +8,59 @@ export interface HttpClientOptions {
   headers?: Record<string, string>;
 }
 
+export class ApiClientError extends Error {
+  status: number;
+  body: any;
+
+  constructor(message: string, status: number, body: any) {
+    super(message);
+    this.name = 'ApiClientError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
+export interface ApiClientSuccessResponse<T = any> {
+  data: T;
+  response: Response;
+}
+
+// 定义 apiClient hook 的完整返回类型
+export type ApiClient = {
+  /**
+   * 发起一个通用的、经过认证的 API 请求。
+   * @param url 请求的 URL 路径。
+   * @param options 原生的 fetch RequestInit 选项。
+   * @returns 成功时返回 Promise<ApiClientSuccessResponse<T>>
+   * @throws {ApiClientError} 请求失败时抛出自定义错误。
+   */
+  request: <T = any>(url: string, options?: RequestInit) => Promise<ApiClientSuccessResponse<T>>;
+
+  /**
+   * 发起一个 GET 请求。
+   * @param url 请求的 URL 路径。
+   * @returns 成功时返回 Promise<ApiClientSuccessResponse<T>>
+   * @throws {ApiClientError} 请求失败时抛出自定义错误。
+   */
+  get: <T = any>(url: string) => Promise<ApiClientSuccessResponse<T>>;
+
+  /**
+   * 发起一个 POST 请求。
+   * @param url 请求的 URL 路径。
+   * @param data 要发送的 JavaScript 对象，会自动 JSON.stringify。
+   * @returns 成功时返回 Promise<ApiClientSuccessResponse<T>>
+   * @throws {ApiClientError} 请求失败时抛出自定义错误。
+   */
+  post: <T = any>(url: string, data: any) => Promise<ApiClientSuccessResponse<T>>;
+
+  /**
+   * 一个记录当前活动请求状态的对象。
+   * key 是 "METHOD_url"，value 是 boolean。
+   */
+  loading: Record<string, boolean>;
+};
+
+
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (value: any) => void; reject: (reason?: any) => void; }> = [];
 
@@ -78,12 +131,10 @@ export class HttpClient {
 
       } catch (e) {
         processQueue(e, null); // 通知队列刷新失败
-        // 刷新失败，需要登出
-        // 调用登出API并重定向
-        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
-        window.location.href = '/auth/signin?error=SessionExpired';
-        // 抛出错误，中断后续操作
-        throw new Error("Session expired. Redirecting to login.");
+        console.error("Token refresh failed, session is likely expired.", e);
+        
+        // 确保后续请求不会继续，抛出一个清晰的错误
+        throw new Error("Session expired or invalid.");
       } finally {
         isRefreshing = false;
       }
@@ -91,7 +142,9 @@ export class HttpClient {
     
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(data.message || response.statusText);
+      // 优先使用服务器返回的 error 字段，其次是 message 字段，最后是 statusText
+      const errorMessage = data.error || data.message || response.statusText;
+      throw new ApiClientError(errorMessage, response.status, data);
     }
     return { data, response };
   }
