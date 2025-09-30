@@ -3,8 +3,15 @@
 import { useState } from 'react';
 import { ApiClient, ProtectedRoute, useApiClient } from 'itangbao-auth-react';
 
+interface BusinessData {
+  projectId: string;
+  businessName: string;
+  reportDate: string;
+  accessedBy: string;
+}
+
 function BusinessContent() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<BusinessData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
@@ -20,10 +27,10 @@ function BusinessContent() {
       // This call will automatically trigger the 401 -> refresh -> retry flow.
       const response = await apiClient.get('/api/some');
       setData(response.data.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching business data:', err);
-      console.error('Error message:', err.message);
-      setError(err.message || 'An unknown error occurred.');
+      const message = err instanceof Error ? err.message : "An unknown error occurred"
+      setError(message);
     } finally {
       setIsLoading(false);
     }
