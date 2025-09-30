@@ -32,9 +32,9 @@ pnpm add itangbao-auth-react
 NEXT_PUBLIC_AUTH_SERVICE_URL=https://your-auth-service.com
 NEXT_PUBLIC_AUTH_CLIENT_ID=your-client-id
 AUTH_CLIENT_SECRET=your-client-secret
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_NEXTAUTH_URL=http://localhost:3000
 
-APP_URL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:3000
 AUTH_SERVICE_URL=https://your-auth-service.com
 AUTH_CLIENT_ID=your-client-id
 ```
@@ -48,7 +48,7 @@ import { AuthProvider } from 'itangbao-auth-react';
 const authConfig = {
   authServiceUrl: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL!,
   clientId: process.env.NEXT_PUBLIC_AUTH_CLIENT_ID!,
-  redirectUri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`,
+  redirectUri: `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/auth/callback`,
   scopes: ['openid', 'profile', 'email'],
 };
 
@@ -86,7 +86,7 @@ const handler = createNextJSAuthHandler(
     authServiceUrl: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL!,
     clientId: process.env.NEXT_PUBLIC_AUTH_CLIENT_ID!,
     clientSecret: process.env.AUTH_CLIENT_SECRET!,
-    appUrl: process.env.NEXT_PUBLIC_APP_URL!,
+    appUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL!,
   })
 );
 
@@ -248,7 +248,7 @@ const handler = createNextJSAuthHandler(
     authServiceUrl: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL!,
     clientId: process.env.NEXT_PUBLIC_AUTH_CLIENT_ID!,
     clientSecret: process.env.AUTH_CLIENT_SECRET!,
-    appUrl: process.env.NEXT_PUBLIC_APP_URL!,
+    appUrl: process.env.NEXT_PUBLIC_NEXTAUTH_URL!,
     cookieConfig: {
       secure: true,                    // 生产环境使用 HTTPS
       sameSite: 'strict',             // CSRF 保护

@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Session } from 'next-auth';
+import Image from 'next/image';
 
 interface HomePageProps {
   session: Session | null;
@@ -124,9 +125,12 @@ function HomePageContent({ session }: HomePageProps) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                <Lock className="h-5 w-5 text-white" />
-              </div>
+              <Image 
+                src="/favicon.ico"
+                alt="itangbao-auth"
+                width={32}
+                height={32}
+              />
               <span className="text-xl font-bold text-gray-900">
                 {t('home:brand', { defaultValue: 'itangbao-auth' })}
               </span>

@@ -22,6 +22,13 @@ database_name = "itangbao-auth"
 database_id = "a2adbec5-d83b-4e3f-9ddb-865fd051e07f"
 migrations_dir = "./src/lib/db/migrations"
 
+[vars]
+NEXTAUTH_URL = "https://ming.itangbao.top"
+GOOGLE_CLIENT_ID = "989334677677-4nvsmsngh0pilaagq6lant1iptepg0b9.apps.googleusercontent.com"
+GITHUB_CLIENT_ID = "Ov23lixqwT6gL57JXExL"
+JWT_EXPIRES_IN = "15m"
+ENABLE_MAGIC_LINK=false
+
 # Smart Placement
 # Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
 # [placement]

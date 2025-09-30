@@ -5,11 +5,12 @@ declare namespace Cloudflare {
 	interface Env {
 		NEXTJS_ENV: string;
 		NEXTAUTH_SECRET: string;
-		NEXT_PUBLIC_APP_URL: string;
+		NEXT_PUBLIC_NEXTAUTH_URL: string;
 		NEXT_PUBLIC_AUTH_SERVICE_URL: string;
 		NEXT_PUBLIC_AUTH_CLIENT_ID: string;
+        AUTH_CLIENT_ID: string;
 		AUTH_CLIENT_SECRET: string;
-		APP_URL: string;
+		NEXTAUTH_URL: string;
 		AUTH_SERVICE_URL: string;
 		ASSETS: Fetcher;
 	}

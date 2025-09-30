@@ -15,6 +15,7 @@ import { I18nProvider } from "@/contexts/I18nProvider";
 import { useClientInfo } from "@/hooks/useClientInfo";
 import Link from "next/link";
 import { User } from "next-auth";
+import Image from "next/image";
 
 function SignInPageContent() {
   const { t } = useTranslation(['auth', 'common']);
@@ -362,10 +363,14 @@ function SignInPageContent() {
                 />
               </div>
             ) : (
-              <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mb-6">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+              <div className="mx-auto h-16 w-16 mb-6">
+                <Image
+                  src="/favicon.ico"
+                  alt="itangbao-auth"
+                  width={64}
+                  height={64}
+                  className="object-contain"
+                />
               </div>
             )}
             

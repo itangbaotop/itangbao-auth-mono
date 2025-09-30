@@ -2,6 +2,7 @@
 import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import { User } from 'itangbao-auth-types';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 
 // 从请求中获取用户信息
 export async function getUserFromRequest(request?: NextRequest): Promise<User | null> {
@@ -34,7 +35,8 @@ export async function getUserFromRequest(request?: NextRequest): Promise<User | 
       console.log('🍪 Forwarding cookie header:', requestCookiesHeader.substring(0, 50) + '...');
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/me`, {
+    const { env } = await getCloudflareContext({async: true});
+    const response = await fetch(`${env.NEXTAUTH_URL}/api/auth/me`, {
       method: 'GET', // 确保是 GET 请求
       credentials: 'include', // 仍然保留，以防万一
       headers: fetchHeaders,

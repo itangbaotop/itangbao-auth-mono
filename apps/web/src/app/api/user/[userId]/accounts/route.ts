@@ -21,7 +21,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const context = getCloudflareContext();
+    const context = await getCloudflareContext({async: true});
     const db = getDb(context.env.DB);
     
     const userAccounts = await db.select({
