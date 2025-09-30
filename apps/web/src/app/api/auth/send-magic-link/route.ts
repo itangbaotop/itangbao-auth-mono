@@ -6,7 +6,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { generateMagicLinkToken, isValidEmail, sendMagicLinkEmail } from "@/lib/magic-link";
 import { nanoid } from "nanoid";
 
-export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   try {

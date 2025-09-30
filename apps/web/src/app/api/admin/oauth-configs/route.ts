@@ -7,8 +7,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { nanoid } from "nanoid";
 import { eq } from "drizzle-orm";
 
-export const runtime = "edge";
-
 // 获取所有 OAuth 配置
 export async function GET() {
   try {

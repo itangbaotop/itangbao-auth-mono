@@ -2,8 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyJwt } from "@/lib/utils/jwt";
 
-export const runtime = "edge";
-
 export async function GET(request: NextRequest) {
   // 1. 从 Authorization header 获取 token
   const authHeader = request.headers.get('Authorization');

@@ -6,8 +6,6 @@ import { refreshTokens } from "@/lib/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq, and } from "drizzle-orm";
 
-export const runtime = "edge";
-
 export async function POST(request: NextRequest) {
   console.log("--- /api/auth/unified-logout called ---");
   

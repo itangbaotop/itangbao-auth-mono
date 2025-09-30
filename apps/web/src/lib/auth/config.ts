@@ -13,7 +13,6 @@ import { nanoid } from "nanoid";
 import { hashPassword } from "../utils/password";
 import { JWT } from "next-auth/jwt";
 
-export const runtime = "edge";
 
 // 读取 Cloudflare Env，计算哪些能力启用
 function getAuthFlags(env: Record<string, unknown>) {

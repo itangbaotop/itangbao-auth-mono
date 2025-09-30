@@ -5,8 +5,6 @@ import { applications, refreshTokens } from "@/lib/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq, and } from "drizzle-orm";
 
-export const runtime = "edge";
-
 export async function POST(request: NextRequest) {
   const params = await request.json() as {
     token: string;

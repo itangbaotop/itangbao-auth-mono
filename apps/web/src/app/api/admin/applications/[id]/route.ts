@@ -7,8 +7,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq } from "drizzle-orm";
 import { clearApplicationDomainsCache } from "@/lib/cors/application-cors";
 
-export const runtime = "edge";
-
 // 更新应用
 export async function PUT(
   request: NextRequest,

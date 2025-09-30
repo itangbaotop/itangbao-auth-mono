@@ -9,8 +9,6 @@ import { nanoid } from "nanoid";
 import { DrizzleD1Database } from "drizzle-orm/d1";
 import { handleTokenParams } from "@/types/next-auth";
 
-export const runtime = "edge";
-
 async function sha256(plain: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(plain);

@@ -7,8 +7,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 
-export const runtime = "edge";
-
 // 用于 PKCE code_challenge_method=S256 的辅助函数
 // 确保这个 sha256 实现只使用 Web Crypto API
 async function sha256(plain: string): Promise<string> {

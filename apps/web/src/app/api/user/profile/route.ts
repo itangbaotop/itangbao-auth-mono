@@ -7,8 +7,6 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq } from "drizzle-orm";
 import { hashPassword } from "@/lib/utils/password";
 
-export const runtime = "edge";
-
 // 获取用户资料
 export async function GET() {
   try {

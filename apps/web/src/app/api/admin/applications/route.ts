@@ -8,8 +8,6 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { clearApplicationDomainsCache } from "@/lib/cors/application-cors";
 
-export const runtime = "edge";
-
 // 获取所有应用
 export async function GET() {
   try {

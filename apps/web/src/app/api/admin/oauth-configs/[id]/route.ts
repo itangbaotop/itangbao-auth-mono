@@ -6,7 +6,6 @@ import { appOAuthConfigs } from "@/lib/db/schema";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { eq } from "drizzle-orm";
 
-export const runtime = "edge";
 
 // 删除 OAuth 配置
 export async function DELETE(
