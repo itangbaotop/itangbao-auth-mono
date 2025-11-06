@@ -205,11 +205,14 @@ export class AuthHandler {
           expiresIn: Math.floor((result.expiresAt - Date.now()) / 1000),
         },
       };
-    } catch {
+    } catch (error: unknown) {
+      console.error("AuthHandler: Refresh token failed", error);
+      // 失败：只返回 401，【不要】清除 cookie
       return {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
-        cookies: this.cookieManager.clearAuthCookies(),
+        // cookies: this.cookieManager.clearAuthCookies(), // <-- 移除这一行 
+        cookies: [], // <--- 确保返回一个空数组
         body: { error: 'Refresh failed' },
       };
     }
